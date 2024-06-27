@@ -1,0 +1,105 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Test</h1>
+
+    <div>
+      <h2>Register</h2>
+      <form id="register">
+        <input type="text" id="regName" placeholder="Username" required />
+        <input type="password" id="regPass" placeholder="Password" required />
+        <button type="submit">Register</button>
+      </form>
+      <p id="regRes"></p>
+    </div>
+
+    <div>
+      <h2>Login</h2>
+      <form id="login">
+        <input type="text" id="loginName" placeholder="Username" required />
+        <input type="password" id="loginPass" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p id="loginRes"></p>
+    </div>
+
+    <div>
+      <h2>Translate</h2>
+      <form id="translate">
+        <input
+          type="text"
+          id="transText"
+          placeholder="Text you want to translate"
+          required
+        />
+        <button type="submit">Translate</button>
+      </form>
+      <p id="translateRes"></p>
+    </div>
+
+    <script>
+      let token = "";
+
+      document
+        .getElementById("register")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const username = document.getElementById("regName").value;
+          const password = document.getElementById("regPass").value;
+
+          const res = await fetch("http://localhost:3000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await res.json();
+          document.getElementById("regRes").innerText = data.message;
+        });
+
+      document
+        .getElementById("login")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const username = document.getElementById("loginName").value;
+          const password = document.getElementById("loginPass").value;
+
+          const res = await fetch("http://localhost:3000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await res.json();
+          document.getElementById("loginRes").innerText = data.message;
+          if (res.status === 200) {
+            token = data.token;
+          }
+        });
+
+      document
+        .getElementById("translate")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const transText = document.getElementById("transText").value;
+
+          const res = await fetch("http://localhost:3000/translate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ transText }),
+          });
+
+          const data = await res.json();
+          console.log(data);
+          document.getElementById("translateRes").innerText = data.message;
+        });
+    </script>
+  </body>
+</html>
